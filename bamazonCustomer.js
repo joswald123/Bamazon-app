@@ -1,5 +1,5 @@
-var mysql = require("mysql");
-var inquirer = require('inquirer');
+const mysql = require("mysql");
+const inquirer = require('inquirer');
 const cTable = require('console.table');
 
 var connection = mysql.createConnection({
@@ -12,15 +12,14 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-   
+
     getAllProducts();
-
-
-
 
 })
 
 const getAllProducts = function () {
+    console.log('\n\nWelcome to Bamazon! \n\n');
+
     connection.query(`SELECT * FROM products`, (err, products) => {
         const list = []
         products.forEach(product => {
@@ -28,7 +27,8 @@ const getAllProducts = function () {
             const temp = {
                 "ID": product.item_id,
                 "Product name": product.product_name,
-                "Price": product.price,
+                "Price": `$ ${product.price}`,
+                "stock quantity": product.stock_quantity
             }
             list.push(temp)
 
@@ -43,6 +43,7 @@ const getAllProducts = function () {
 const customerOption = function () {
     inquirer
         .prompt([
+
             {
                 type: 'input',
                 name: "Id",
@@ -64,22 +65,33 @@ const customerOption = function () {
                 filter: Number
 
             }]).then(function (answers) {
-                console.log(JSON.stringify(answers, null, "  "));
+                // console.log(JSON.stringify(answers, null, "  "));
 
-                // call database and lookup customer's request
+                //------call database and lookup customer's request-------------
 
-                var query ="SELECT item_id, stock_quantity FROM products";
-                connection.query(query, function (err, res){
-                    if(err) throw err;
-                    // for (var i = 0; i < res.length; i++) {
-                    console.log(res);
+                let query = "SELECT item_id, price, stock_quantity FROM products WHERE ?";
+                connection.query(query, [{ item_id: answers.Id }], function (err, res) {
+                    if (err) throw err;
+                    if (answers.quantity <= res[0].stock_quantity) {
+                        connection.query("UPDATE products SET ? WHERE ?",
+                            [
+                                {
+                                    stock_quantity: `${res[0].stock_quantity - answers.quantity}`
+                                },
+                                {
+                                    item_id: answers.Id
+                                }
+
+                            ],function(){
+                                console.log(`Your order was successful and your Total is $${res[0].price * answers.quantity}`)
+                            });
+
+
+                    } else if (answers.quantity >= res[0].stock_quantity) {
+                        console.log("Insufficient quantity!");
                     }
-
-                );
-
-                //compare if i have enough quantity 
-                    // depending on my the comparasion i will update sql or not
+                });
             });
-
-
 };
+
+
