@@ -14,7 +14,7 @@ By Node application called bamazonCustomer.js. Running this application it displ
 4. price (cost to customer)
 5. stock_quantity (how much of the product is available in stores)
 
-<img src=""/>
+<img src="https://ibb.co/fQD9KHz"/>
 
 Second, the app will prompt users with two messages.
 
