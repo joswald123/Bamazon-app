@@ -82,14 +82,15 @@ function productsForSale (){
             console.table(list) 
             runSearch();
                    
-    })   
+    });   
     
 };
+
 
 function inventoryView (){
     connection.query(`SELECT product_name, stock_quantity FROM products  WHERE stock_quantity < 5`, (err, products) => {
         const list = []
-        console.log(err);
+        console.log('\n');
         
         products.forEach(product => {
 
@@ -103,9 +104,9 @@ function inventoryView (){
         });
 
         console.table(list)
+        runSearch();
     });
-
-    runSearch();
+    
 };
 
 function addToInventory(){

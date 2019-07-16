@@ -65,9 +65,8 @@ const customerOption = function () {
                 filter: Number
 
             }]).then(function (answers) {
-                // console.log(JSON.stringify(answers, null, "  "));
-
-                //------call database and lookup customer's request-------------
+             
+           //------call database and lookup customer's request-------------
 
                 let query = "SELECT item_id, price, stock_quantity FROM products WHERE ?";
                 connection.query(query, [{ item_id: answers.Id }], function (err, res) {
